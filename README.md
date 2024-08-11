@@ -37,7 +37,7 @@ When you `open()` a file, you can choose whether or not to skip the header line.
 csv.open("path_to_file.csv"); // by default, skip_header = true
 csv.open("path_to_file.csv", false); // read header when calling read_line() next
 ```
-You `read_line()` to read the next line in the CSV file which is internally tokenize. This returns `true` when data has been read and `false` otherwise (e.g., at the end of the file)
+You `read_line()` to read the next line in the CSV file which is internally tokenized. This returns `true` when data has been read and `false` otherwise (e.g., at the end of the file)
 ```cpp
 csv.read_line(); // can be used on-demand
 
