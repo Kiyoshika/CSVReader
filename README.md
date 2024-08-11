@@ -32,6 +32,18 @@ CSVReader csv; // by default using ',' and '"'
 CSVReader csv2('|', '\''); // use '|' as delim and single quote as quote char
 ```
 
+You can optionally set a string that defines a NULL value, e.g., NA, N/A, (null), etc. 
+
+This library always treats empty columns as null (e.g., empty strings created when two delimiters are directly next to each other.)
+
+Any index out of bounds will automatically return true if checking for null.
+```cpp
+csv.set_null_text("NA"); // any text read as "NA" will be marked as null
+
+// check if a column is null at index
+if (csv.column_is_null(index)) { ... }
+```
+
 When you `open()` a file, you can choose whether or not to skip the header line. By default, this is true. Every `open()` must have an opposite `close()`. This is not included in the destructor since nothing is opened upon construction and is thus the programmer's responsibility.
 ```cpp
 csv.open("path_to_file.csv"); // by default, skip_header = true

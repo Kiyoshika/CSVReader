@@ -19,8 +19,14 @@ void CSVReader::set_delimiter(const char delimiter)
     this->m_delimiter = delimiter;
 }
 
-void CSVReader::set_quote(const char quote) {
+void CSVReader::set_quote(const char quote)
+{
     this->m_quote = quote;
+}
+
+void CSVReader::set_null_text(const std::string& null_text)
+{
+    this->m_null_text = null_text;
 }
 
 bool CSVReader::open(const std::string& filepath, const bool skip_header)
@@ -55,8 +61,15 @@ bool CSVReader::read_line()
     return false;
 }
 
+bool CSVReader::token_is_null(const std::string& token) const
+{
+    return token.empty() || (!this->m_null_text.empty() && token == this->m_null_text);
+}
+
 void CSVReader::tokenize_line(const std::string& line)
 {
+    this->m_columns.clear();
+
     bool inside_quote = false;
     std::string current_token;
     for (const char c : line)
@@ -66,7 +79,7 @@ void CSVReader::tokenize_line(const std::string& line)
 
         if (!inside_quote && c == this->m_delimiter)
         {
-            this->m_tokens.push_back(current_token);
+            this->m_columns.emplace_back(current_token, this->token_is_null(current_token));
             current_token.clear();
             continue;
         }
@@ -75,114 +88,114 @@ void CSVReader::tokenize_line(const std::string& line)
     }
 
     if (!current_token.empty())
-        this->m_tokens.push_back(current_token);
+        this->m_columns.emplace_back(current_token, this->token_is_null(current_token));
 }
 
 template<>
-uint8_t CSVReader::get_column<uint8_t>(const std::size_t idx)
+uint8_t CSVReader::get_column<uint8_t>(const std::size_t idx) const
 {
-    if (idx >= this->m_tokens.size())
+    if (idx >= this->m_columns.size())
         return 0;
 
-    return std::stoul(this->m_tokens[idx]);
+    return std::stoul(this->m_columns[idx].get_value());
 }
 
 template<>
-uint16_t CSVReader::get_column<uint16_t>(const std::size_t idx)
+uint16_t CSVReader::get_column<uint16_t>(const std::size_t idx) const
 {
-    if (idx >= this->m_tokens.size())
+    if (idx >= this->m_columns.size())
         return 0;
 
-    return std::stoul(this->m_tokens[idx]);
+    return std::stoul(this->m_columns[idx].get_value());
 }
 
 template<>
-uint32_t CSVReader::get_column<uint32_t>(const std::size_t idx)
+uint32_t CSVReader::get_column<uint32_t>(const std::size_t idx) const
 {
-    if (idx >= this->m_tokens.size())
+    if (idx >= this->m_columns.size())
         return 0;
 
-    return std::stoul(this->m_tokens[idx]);
+    return std::stoul(this->m_columns[idx].get_value());
 }
 
 template<>
-uint64_t CSVReader::get_column<uint64_t>(const std::size_t idx)
+uint64_t CSVReader::get_column<uint64_t>(const std::size_t idx) const
 {
-    if (idx >= this->m_tokens.size())
+    if (idx >= this->m_columns.size())
         return 0;
 
-    return std::stoull(this->m_tokens[idx]);
+    return std::stoull(this->m_columns[idx].get_value());
 }
 
 template<>
-int8_t CSVReader::get_column<int8_t>(const std::size_t idx)
+int8_t CSVReader::get_column<int8_t>(const std::size_t idx) const
 {
-    if (idx >= this->m_tokens.size())
+    if (idx >= this->m_columns.size())
         return 0;
 
-    return std::stol(this->m_tokens[idx]);
+    return std::stol(this->m_columns[idx].get_value());
 }
 
 template<>
-int16_t CSVReader::get_column<int16_t>(const std::size_t idx)
+int16_t CSVReader::get_column<int16_t>(const std::size_t idx) const
 {
-    if (idx >= this->m_tokens.size())
+    if (idx >= this->m_columns.size())
         return 0;
 
-    return std::stol(this->m_tokens[idx]);
+    return std::stol(this->m_columns[idx].get_value());
 }
 
 template<>
-int32_t CSVReader::get_column<int32_t>(const std::size_t idx)
+int32_t CSVReader::get_column<int32_t>(const std::size_t idx) const
 {
-    if (idx >= this->m_tokens.size())
+    if (idx >= this->m_columns.size())
         return 0;
 
-    return std::stol(this->m_tokens[idx]);
+    return std::stol(this->m_columns[idx].get_value());
 }
 
 template<>
-int64_t CSVReader::get_column<int64_t>(const std::size_t idx)
+int64_t CSVReader::get_column<int64_t>(const std::size_t idx) const
 {
-    if (idx >= this->m_tokens.size())
+    if (idx >= this->m_columns.size())
         return 0;
 
-    return std::stoll(this->m_tokens[idx]);
+    return std::stoll(this->m_columns[idx].get_value());
 }
 
 template<>
-double CSVReader::get_column<double>(const std::size_t idx)
+double CSVReader::get_column<double>(const std::size_t idx) const
 {
-    if (idx >= this->m_tokens.size())
+    if (idx >= this->m_columns.size())
         return 0.0;
 
-    return std::stod(this->m_tokens[idx]);
+    return std::stod(this->m_columns[idx].get_value());
 }
 
 template<>
-float CSVReader::get_column<float>(const std::size_t idx)
+float CSVReader::get_column<float>(const std::size_t idx) const
 {
-    if (idx >= this->m_tokens.size())
+    if (idx >= this->m_columns.size())
         return 0.0f;
 
-    return std::stof(this->m_tokens[idx]);
+    return std::stof(this->m_columns[idx].get_value());
 }
 
 template<>
-std::string CSVReader::get_column<std::string>(const std::size_t idx)
+std::string CSVReader::get_column<std::string>(const std::size_t idx) const
 {
-    if (idx >= this->m_tokens.size())
+    if (idx >= this->m_columns.size())
         return std::string{};
 
-    return this->m_tokens[idx];
+    return this->m_columns[idx].get_value();
 }
 
-std::string CSVReader::get_and_strip_column(const std::size_t idx)
+std::string CSVReader::get_and_strip_column(const std::size_t idx) const
 {
-    if (idx >= this->m_tokens.size())
+    if (idx >= this->m_columns.size())
         return std::string{};
 
-    std::string& str = this->m_tokens[idx];
+    const std::string& str = this->m_columns[idx].get_value();
     if (str.length() < 3)
         return std::string{};
 
@@ -196,4 +209,12 @@ std::string CSVReader::get_and_strip_column(const std::size_t idx)
         stripped_str.push_back(str[i]);
 
     return stripped_str;
+}
+
+bool CSVReader::column_is_null(const std::size_t idx) const
+{
+    if (idx >= this->m_columns.size())
+        return true;
+
+    return this->m_columns[idx].is_null();
 }
