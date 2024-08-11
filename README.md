@@ -24,6 +24,7 @@ Where `[your target]` is your executable or library that needs this as a depende
 By default, this will compile the library in release mode.
 
 ## Usage
+This object lives in the `csv` namespace, so either use `using namespace csv;` or preface with `csv::CSVReader`.
 
 When calling the constructor, you can pass a custom (single-char) delimiter and (single-char) quote character. By default, these are `,` and `"` respectively.
 ```cpp
