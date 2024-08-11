@@ -64,7 +64,9 @@ while (csv.read_line()) { ... }
 ```
 
 ### Fetching Values
-You can then use either `get_column<T>(index)` to retrieve and cast the column value to your desired types or use `get_and_strip_column(index)` to read the column as a string and strip the quotes off the end.
+You can then use either `get_column<T>(index)` to retrieve and cast the column value to your desired types or use `get_and_strip_column(index)` to read the column as a string and strip the quotes off the end. Note that `get_column<T>(...)` will throw an exception if the value can not be cast to the given type.
+
+Alternatively, use `get_column_or_default<T>(index, default)` to attempt to retrieve a value or return a default value if either the value could not be cast properly OR if the value is null. This can simplify things instead of explicitly checking `csv.column_is_null(...)`. **Note that while this is convenient, it will silence any underlying issues with the data, so use at your own risk.**
 
 All major numeric types are supported as well as `std::string`.
 
@@ -88,8 +90,7 @@ int main()
    
    while (csv.read_line())
    {
-      if (!csv.column_is_null(0))
-        auto col1 = csv.get_column<uint16_t>(0);
+      auto col1 = csv.get_column_or_default<uint16_t>(0, 0);
       auto col2 = csv.get_column<double>(1);
       auto col3 = csv.get_column<std::string>(2);
       auto col4 = csv.get_and_strip_column(3); // e.g., "value" -> value

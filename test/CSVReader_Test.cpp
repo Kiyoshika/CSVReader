@@ -14,17 +14,25 @@ int main()
 
     uint8_t x1 = csv.get_column<uint8_t>(0);
     assert(x1 == 10);
+    x1 = csv.get_column_or_default<uint8_t>(0, 0);
+    assert(x1 == 10);
     assert(!csv.column_is_null(0));
 
     int8_t x2 = csv.get_column<int8_t>(1);
+    assert(x2 == -123);
+    x2 = csv.get_column_or_default<int8_t>(1, 0);
     assert(x2 == -123);
     assert(!csv.column_is_null(1));
 
     float x3 = csv.get_column<float>(2);
     assert(fabsf(x3 - 3.14f) < 0.000001f);
+    x3 = csv.get_column_or_default<float>(2, 0.0f);
+    assert(fabsf(x3 - 3.14f) < 0.000001f);
     assert(!csv.column_is_null(2));
 
     double x4 = csv.get_column<double>(2);
+    assert(abs(x4 - 3.14) < 0.000001);
+    x4 = csv.get_column_or_default<double>(2, 0.0);
     assert(abs(x4 - 3.14) < 0.000001);
 
     double x5 = csv.get_column<double>(3);
@@ -33,10 +41,17 @@ int main()
 
     int32_t x6 = csv.get_column<int32_t>(4);
     assert(x6 == 1000000);
+    x6 = csv.get_column_or_default<int32_t>(4, 0);
+    assert(x6 == 1000000);
     assert(!csv.column_is_null(4));
 
     std::string x7 = csv.get_column<std::string>(5);
     assert(x7 == "hello");
+    x7 = csv.get_column_or_default<std::string>(5, "");
+    assert(x7 == "hello");
+    // this should fail casting to int, so we check a default value of 10
+    auto x7_2 = csv.get_column_or_default<int32_t>(5, 10);
+    assert(x7_2 == 10);
     assert(!csv.column_is_null(5));
 
     std::string x8 = csv.get_column<std::string>(6);

@@ -24,6 +24,22 @@ class CSVReader
     // if idx is out of range, returns 0 for numeric types for empty string.
     template <typename T>
     T get_column(const std::size_t idx) const;
+    // return the current column's value at idx as type T or default to given value on error or NULL.
+    // if idx is out of range, returns default value provided.
+    template <typename T>
+    T get_column_or_default(const std::size_t idx, T default_value) const
+    {
+        if (this->column_is_null(idx))
+            return default_value;
+
+        try
+        {
+            return this->get_column<T>(idx);
+        } catch (const std::exception& e) {
+            (void)e;
+            return default_value;
+        }
+    }
     // get column as string and strip quotes (if present.)
     // if idx is out of range, returns empty string.
     std::string get_and_strip_column(const std::size_t idx) const;
