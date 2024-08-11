@@ -78,3 +78,5 @@ int main()
    return 0;
 }
 ```
+**WARNING**:
+* This library does not safeguard against exceptions if a cast fails. It's the programmer's responsibility to either validate data or handle exceptions.
