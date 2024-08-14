@@ -9,6 +9,7 @@ struct CSVColumn
     public:
     CSVColumn(const std::string& value, bool is_null);
     const std::string& get_value() const;
+    std::string get_stripped_value(const char quote) const;
     bool is_null() const;
     void set_null(bool is_null);
 
