@@ -97,7 +97,7 @@ uint8_t CSVReader::get_column<uint8_t>(const std::size_t idx) const
     if (idx >= this->m_columns.size())
         return 0;
 
-    return std::stoul(this->m_columns[idx].get_value());
+    return std::stoul(this->m_columns[idx].get_stripped_value(this->m_quote));
 }
 
 template<>
@@ -106,7 +106,7 @@ uint16_t CSVReader::get_column<uint16_t>(const std::size_t idx) const
     if (idx >= this->m_columns.size())
         return 0;
 
-    return std::stoul(this->m_columns[idx].get_value());
+    return std::stoul(this->m_columns[idx].get_stripped_value(this->m_quote));
 }
 
 template<>
@@ -115,7 +115,7 @@ uint32_t CSVReader::get_column<uint32_t>(const std::size_t idx) const
     if (idx >= this->m_columns.size())
         return 0;
 
-    return std::stoul(this->m_columns[idx].get_value());
+    return std::stoul(this->m_columns[idx].get_stripped_value(this->m_quote));
 }
 
 template<>
@@ -124,7 +124,7 @@ uint64_t CSVReader::get_column<uint64_t>(const std::size_t idx) const
     if (idx >= this->m_columns.size())
         return 0;
 
-    return std::stoull(this->m_columns[idx].get_value());
+    return std::stoull(this->m_columns[idx].get_stripped_value(this->m_quote));
 }
 
 template<>
@@ -133,7 +133,7 @@ int8_t CSVReader::get_column<int8_t>(const std::size_t idx) const
     if (idx >= this->m_columns.size())
         return 0;
 
-    return std::stol(this->m_columns[idx].get_value());
+    return std::stol(this->m_columns[idx].get_stripped_value(this->m_quote));
 }
 
 template<>
@@ -142,7 +142,7 @@ int16_t CSVReader::get_column<int16_t>(const std::size_t idx) const
     if (idx >= this->m_columns.size())
         return 0;
 
-    return std::stol(this->m_columns[idx].get_value());
+    return std::stol(this->m_columns[idx].get_stripped_value(this->m_quote));
 }
 
 template<>
@@ -151,7 +151,7 @@ int32_t CSVReader::get_column<int32_t>(const std::size_t idx) const
     if (idx >= this->m_columns.size())
         return 0;
 
-    return std::stol(this->m_columns[idx].get_value());
+    return std::stol(this->m_columns[idx].get_stripped_value(this->m_quote));
 }
 
 template<>
@@ -160,7 +160,7 @@ int64_t CSVReader::get_column<int64_t>(const std::size_t idx) const
     if (idx >= this->m_columns.size())
         return 0;
 
-    return std::stoll(this->m_columns[idx].get_value());
+    return std::stoll(this->m_columns[idx].get_stripped_value(this->m_quote));
 }
 
 template<>
@@ -169,7 +169,7 @@ double CSVReader::get_column<double>(const std::size_t idx) const
     if (idx >= this->m_columns.size())
         return 0.0;
 
-    return std::stod(this->m_columns[idx].get_value());
+    return std::stod(this->m_columns[idx].get_stripped_value(this->m_quote));
 }
 
 template<>
@@ -178,7 +178,7 @@ float CSVReader::get_column<float>(const std::size_t idx) const
     if (idx >= this->m_columns.size())
         return 0.0f;
 
-    return std::stof(this->m_columns[idx].get_value());
+    return std::stof(this->m_columns[idx].get_stripped_value(this->m_quote));
 }
 
 template<>
@@ -195,20 +195,7 @@ std::string CSVReader::get_and_strip_column(const std::size_t idx) const
     if (idx >= this->m_columns.size())
         return std::string{};
 
-    const std::string& str = this->m_columns[idx].get_value();
-    if (str.length() < 3)
-        return std::string{};
-
-    // if the quote is not present on both sides, return the string as is
-    // (although, this is almost surely a cause of another problem)
-    if (str[0] != this->m_quote && str[str.length() - 1] != this->m_quote)
-        return str;
-
-    std::string stripped_str;
-    for (std::size_t i = 1; i < str.length() - 1; ++i)
-        stripped_str.push_back(str[i]);
-
-    return stripped_str;
+    return this->m_columns[idx].get_stripped_value(this->m_quote);
 }
 
 bool CSVReader::column_is_null(const std::size_t idx) const
